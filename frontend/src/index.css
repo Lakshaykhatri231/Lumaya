@@ -1,0 +1,73 @@
+/*
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 44 74 61;
+    --color-primary-hover: 55 92 76;
+    --color-background: 255 255 255;
+    --color-background-secondary: 232 237 231;
+  }
+
+  .dark {
+    --color-primary: 135 168 120;
+    --color-primary-hover: 166 187 151;
+    --color-background: 44 74 61;
+    --color-background-secondary: 55 92 76;
+  }
+}
+
+body {
+  @apply bg-background text-primary transition-colors duration-200;
+}
+
+/* Glass Morphism */
+/*
+.glass {
+  @apply backdrop-blur-md bg-white/30 border border-white/20;
+}
+
+.glass-hover {
+  @apply hover:bg-white/40 transition-all duration-200;
+}
+
+/* Chat Bubbles */
+/*
+.chat-bubble {
+  @apply relative p-4 rounded-[20px] backdrop-blur-sm transition-all duration-200;
+}
+
+.chat-bubble-user {
+  @apply bg-white/40 text-gray-700;
+}
+
+.chat-bubble-ai {
+  @apply bg-white/20 text-gray-700;
+}
+
+/* Animations */
+/*
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive Design */
+/*
+@media (max-width: 768px) {
+  .glass-container {
+    @apply px-4;
+  }
+  
+  .chat-bubble {
+    @apply max-w-[90%];
+  }
+}
+
+*/

@@ -1,0 +1,174 @@
+@media (max-width: 768px) {
+    #homepageMainHeading{
+        font-size: 30px !important;
+        font-weight: 500 !important;
+    } 
+    #homepageAnimation{
+
+        margin-top: -20vw !important;
+        justify-content: center;
+        align-items: center;
+        align-self: center;
+        transform: scale(0.6);
+        margin-left: -7% !important;
+
+    } 
+    #homepageGetStarted{
+        transform: scale(0.7);
+        align-items: center;
+        justify-content: center;
+        margin-left: 15vw;
+        margin-top: 3vw;
+    }
+    #homepageParaText{
+        font-size: 18px !important;
+    }
+    #homepageFlex{
+        display: flex;
+        flex-direction: column;
+    } 
+    #homepageUsecaseHeading{
+        font-size: 20px !important;
+        order: 1;
+        /* width: 120%; */
+    } 
+    #homepageUsecasePara{
+        font-size: 15px !important;
+        order: 2;
+        line-height: 25px;
+        align-self: center;
+        /* width: 120%; */
+    }
+    #homepageUsecaseBox{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    #homepageUsecaseContent{
+        width: 130%;
+        margin-left: 10vw !important;
+    }
+    #homepageUsecaseContent2{
+        width: 130%;
+        margin-left: -10vw !important;
+    }
+    #homepageUsecaseImage{
+        order: 3;
+    }
+    #homepageUsecaseImage img{
+        margin: 0px !important;
+        margin-left: 0px !important;
+        margin-top: -10vh !important;
+        margin-bottom: -15vh !important;
+    }
+    #homepageLogoSlider{
+        margin-top: -10vh !important;
+    }
+    #homepageHero2Heading{
+        font-size: 20px !important;
+        font-weight: 500 !important;
+        margin-top: -5vh;
+
+    }
+    #homepageHero2TextBox{
+        height: 15vh !important;
+        top: -1vh !important;
+    }
+    #homepageHero2{
+        height: 15vh !important;
+    }
+    #homepageHero2Image img{
+        height: 25vh !important;
+    }
+    #homepageUsecase{
+        width: 90vw;
+        margin-left: -5vw;
+    }
+    #homepageGreenSection{
+        height: 45vh !important;
+    }
+    #homepageGreenSectionHeading{
+        font-size: 25px;
+        width: 100% !important;
+        line-height: 40px !important;
+        text-align: center !important;
+        margin-left: -1vw !important;
+    }
+    #homepageGreenSectionPara{
+        font-size: 20px !important;
+    }
+    #homepageGreenSectionButton{
+        margin-left: 10vw !important;
+    }
+    #homepageGreenFlex{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;  
+        margin-top: -5vh !important;
+    }
+    #aboutUsHeading{
+        width: 100vw !important;
+        margin-left: -10vw !important;
+    }
+    #aboutUsMainContent{
+        max-width: 100vw !important;
+    }
+    #aboutUsSection{
+        width: 90vw !important;
+        margin-left: -13vw !important;
+        text-align: center;
+    }
+    #aboutUsSection2{
+        width: 90vw !important;
+        margin-left: -13vw !important;
+    }
+    #aboutUsSection2 h2{
+        width: 96vw !important;
+        /* margin-left: -13vw !important; */
+        text-align: center;
+    }
+
+    .max-w-7xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      /* Ensure the mobile menu takes full width */
+      .md\:hidden {
+        width: 100%;
+      }
+      
+      /* Add smooth transitions for mobile menu */
+      .mobile-menu-enter {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      
+      .mobile-menu-enter-active {
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 200ms ease-out, transform 200ms ease-out;
+      }
+      
+      .mobile-menu-exit {
+        opacity: 1;
+        transform: scale(1);
+      }
+      
+      .mobile-menu-exit-active {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 200ms ease-in, transform 200ms ease-in;
+      }
+
+      #navbarMobile{
+        margin-left: 40vw !important;
+        width: 60%;
+      }
+
+      #navbarMainDiv{
+        margin-left: -40vw;
+        max-width: 100vw;
+      }
+      
+}

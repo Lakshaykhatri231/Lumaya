@@ -1,0 +1,62 @@
+{
+  "name": "wallet-monitor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build ",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.0",
+    "@heroicons/react": "^2.0.18",
+    "@lottiefiles/dotlottie-react": "^0.2.2",
+    "@paddle/paddle-js": "^1.4.0",
+    "@pixiv/three-vrm": "^3.4.0",
+    "@supabase/supabase-js": "^2.47.12",
+    "axios": "^1.6.2",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "framer-motion": "^12.6.3",
+    "lucide-react": "^0.487.0",
+    "path-browserify": "^1.0.1",
+    "react": "^18.2.0",
+    "react-calendar": "^5.1.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^7.2.0",
+    "react-snap": "^1.23.0",
+    "resend": "^4.0.1",
+    "three": "^0.175.0",
+    "web3": "^4.16.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "concurrently": "^9.1.2",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^5.0.0"
+  },
+  "reactSnap": {
+    "skipThirdPartyRequests": true,
+    "source": "dist",
+    "inlineCss": true,
+    "include": [
+      "/",
+      "/about",
+      "/refund-policy",
+      "/privacy-policy",
+      "/terms-of-service",
+      "/auth",
+      "/dashboard",
+      "/portfolio"
+    ]
+  }
+}
