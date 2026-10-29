@@ -203,9 +203,3 @@ The Paddle webhook verifies the raw request body, so it is mounted before the JS
 - The Privacy Policy page describes what the code does today; have it reviewed before relying on it as legal text.
 - Default model ids (`gemini-1.5-flash`, `gemini-embedding-exp-03-07`) are older and may be retired by Google. Override them with `GEMINI_MODEL` and `GEMINI_EMBEDDING_MODEL`. Changing the embedding model requires re-embedding stored memories.
 - The old wallet tables (`users`, `stealth_wallets`, `watchlist`) are left in place by the migrations; drop them yourself once nothing needs them.
-
-## Related projects
-
-- [`frontend-ai`](https://github.com/anabansal/frontend-ai) — the standalone, further-rebranded web frontend for Lumaya
-- [`lumaya`](https://github.com/anabansal/lumaya) — the native Expo/React Native mobile app
-- [`xrypttSaaS`](https://github.com/anabansal/xrypttSaaS) — the original crypto wallet-monitoring product this codebase was forked from
