@@ -194,12 +194,3 @@ Set `ADMIN_USER_IDS` to a comma-separated list of Supabase user ids, then:
 
 The Paddle webhook verifies the raw request body, so it is mounted before the JSON parser. Set `PADDLE_ENV=sandbox` while testing with Paddle's sandbox.
 
-## Known gaps
-
-- **Pricing, Terms, and Refund pages** (`PricingPage`, `TermsOfServicePage`, `RefundPolicyPage`, `PaymentSuccessPage`, `PrivacyPolicyPage`) still contain the original crypto product's plans and wording and are **not routed**. Lumaya's plans, price ids, and legal text need to be written before they're wired up. The webhook and `subscriptions` table are ready for them.
-- **The scope guard is a strong filter, not a wall.** A determined user can phrase a task cleverly enough to slip past both the patterns and the model read; the scope reminder in the prompt is the backstop. Real people are favoured over catching every attempt, so it errs toward letting a borderline message through.
-- **Account deletion** is by email request; there is no self-serve delete yet.
-- **Journal reminders** appear in-app when the journal is open; there are no emails or push notifications.
-- The Privacy Policy page describes what the code does today; have it reviewed before relying on it as legal text.
-- Default model ids (`gemini-1.5-flash`, `gemini-embedding-exp-03-07`) are older and may be retired by Google. Override them with `GEMINI_MODEL` and `GEMINI_EMBEDDING_MODEL`. Changing the embedding model requires re-embedding stored memories.
-- The old wallet tables (`users`, `stealth_wallets`, `watchlist`) are left in place by the migrations; drop them yourself once nothing needs them.
