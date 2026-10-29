@@ -22,8 +22,6 @@ https://github.com/user-attachments/assets/ca1663ec-ca27-4c5b-90e9-d77a68fd5429
 
 ## Architecture
 
-Editable source: [`docs/architecture.drawio`](./docs/architecture.drawio) (two pages; open it in [draw.io](https://app.diagrams.net)). The images below are exported from it.
-
 ### System overview
 
 ![Lumaya system architecture](./docs/architecture.svg)
