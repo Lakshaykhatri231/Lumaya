@@ -186,28 +186,26 @@ export const checkAuthStatus = async () => {
 };
 
 export const signOut = async () => {
+  const token = localStorage.getItem('authToken');
+
+  // Local sign-out must happen even if the server call fails, otherwise the user is stuck signed in
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userId');
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/signout`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
-
-    // Clear the token from localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userId');
-    
     return await response.json();
   } catch (error) {
     console.error('Error signing out:', error);
-    throw error;
+    return { message: 'Signed out locally' };
   }
 };
 
@@ -223,29 +221,4 @@ export const getSessionId = (userId) => {
   const newSessionId = crypto.randomUUID();
   localStorage.setItem(`sessionId_${userId}`, newSessionId);
   return newSessionId;
-};
-
-// Get all users with phone numbers for messaging (admin function)
-export const getAllUsersWithPhoneNumbers = async () => {
-  try {
-    // This requires admin access - typically done server-side
-    const { data: { users }, error } = await supabase.auth.admin.listUsers();
-    
-    if (error) throw error;
-    
-    // Filter and map users who have phone numbers
-    const usersWithPhones = users
-      .filter(user => user.user_metadata?.phone_number)
-      .map(user => ({
-        id: user.id,
-        email: user.email,
-        phone_number: user.user_metadata.phone_number,
-        created_at: user.created_at
-      }));
-    
-    return usersWithPhones;
-  } catch (error) {
-    console.error('Error getting users with phone numbers:', error);
-    throw error;
-  }
 };

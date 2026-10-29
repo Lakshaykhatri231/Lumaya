@@ -6,6 +6,8 @@ export const useMessages = (sessionId, currentUser, hasInitialized, setHasInitia
   const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState('');
   const [isUserBlocked, setIsUserBlocked] = useState(false);
+  // How the user came across in the last turn; the avatar shows it as an expression
+  const [emotion, setEmotion] = useState(null);
   const [blockInfo, setBlockInfo] = useState(null);
   const [typingMessage, setTypingMessage] = useState('');
   const [isAnimatingTyping, setIsAnimatingTyping] = useState(false);
@@ -258,6 +260,7 @@ export const useMessages = (sessionId, currentUser, hasInitialized, setHasInitia
           
           // Set the block status for future messages
           setIsUserBlocked(true);
+          setEmotion('distressed');
           setBlockInfo({
             blockReason: responseData.blockReason,
             blockExpiresAt: responseData.blockExpiresAt,
@@ -269,6 +272,7 @@ export const useMessages = (sessionId, currentUser, hasInitialized, setHasInitia
           showError(`Access temporarily restricted. ${responseData.autoUnblockIn ? `Will be restored in ${responseData.autoUnblockIn}.` : 'Please contact support if this continues.'}`);
         } else {
           // Normal AI response
+          setEmotion(responseData.emotion ?? null);
           await simulateTyping(responseData.response, messageId, requestStartTime);
         }
       } else {
@@ -337,6 +341,7 @@ export const useMessages = (sessionId, currentUser, hasInitialized, setHasInitia
     blockInfo,
     checkBlockExpiry,
     typingMessage,
-    isAnimatingTyping
+    isAnimatingTyping,
+    emotion
   };
 };

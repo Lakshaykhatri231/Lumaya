@@ -45,7 +45,9 @@ export function initializeConfig() {
         apiKey2: process.env.HUGGINGFACE_API_KEY1
       },
       gemini: {
-        apiKey: process.env.GEMINI_API_KEY
+        apiKey: process.env.GEMINI_API_KEY,
+        model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+        embeddingModel: process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-exp-03-07'
       },
       resend: {
         apiKey: process.env.RESEND_API_KEY,
@@ -54,6 +56,8 @@ export function initializeConfig() {
 
         secret: process.env.SESSION_SECRET
       },
+      frontendUrl: process.env.FRONTEND_URL,
+      adminUserIds: (process.env.ADMIN_USER_IDS || '').split(',').map((id) => id.trim()).filter(Boolean),
       nodeEnv: process.env.NODE_ENV || 'development'
     };
 

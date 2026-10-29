@@ -56,8 +56,8 @@ Use their name occasionally in your responses to maintain a personal connection.
 
 // Probability constant for probing nudges
 export const PROBING_NUDGE_PROBABILITY = 0.6;
-const getRandomTherapistPrompt = () => {
-  const prompts = [
+// The five therapeutic styles, in THERAPIST_STYLES order
+const THERAPIST_PROMPTS = [
     // Original questioning approach
     `
   You are Lumaya, an AI therapist.
@@ -276,27 +276,25 @@ const getRandomTherapistPrompt = () => {
     - Technique: Strategic inquiry for insight
 
     Respond with empathy and follow with thoughtful questions that invite deeper self-reflection and discovery.`
-  ];
+];
 
-  // Weighted selection logic
+export const THERAPIST_STYLES = ['questioning', 'hard_truths', 'brief', 'solution_focused', 'interrogative'];
+
+export const getTherapistPrompt = (style) => {
+  const index = THERAPIST_STYLES.indexOf(style);
+  return THERAPIST_PROMPTS[index === -1 ? 0 : index];
+};
+
+// Fallback when the user's state gives no clear signal: weighted random
+// (40% questioning, 10% hard truths, 15% each for brief, solution-focused, interrogative)
+const getRandomTherapistPrompt = () => {
   const random = Math.random();
-  
-  if (random < 0.4) {
-    // 40% chance for original questioning approach (index 0)
-    return prompts[0];
-  } else if (random < 0.50) {
-    // 15% chance for honest opinion & hard truths approach (index 1)
-    return prompts[1];
-  } else if (random < 0.65) {
-    // 15% chance for short response approach (index 2)
-    return prompts[2];
-  } else if (random < 0.8) {
-    // 15% chance for solution-focused approach (index 3)
-    return prompts[3];
-  } else {
-    // 15% chance for interrogative focused approach (index 4)
-    return prompts[4];
-  }
+
+  if (random < 0.4) return getTherapistPrompt('questioning');
+  if (random < 0.5) return getTherapistPrompt('hard_truths');
+  if (random < 0.65) return getTherapistPrompt('brief');
+  if (random < 0.8) return getTherapistPrompt('solution_focused');
+  return getTherapistPrompt('interrogative');
 };
 
 export { getRandomTherapistPrompt };

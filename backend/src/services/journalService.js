@@ -198,7 +198,7 @@ Tone based on recent absence:`;
                 try {
                     console.log(`[PromptGenerator] AI attempt ${attempt}/${PROMPT_CONFIG.AI_RETRY_ATTEMPTS}`);
 
-                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                    const model = genAI.getGenerativeModel({ model: config.gemini.model });
                     const systemPrompt = buildSystemPrompt(userContext);
 
                     const result = await model.generateContent(systemPrompt);
@@ -268,20 +268,12 @@ Tone based on recent absence:`;
      */
     static async analyzeEntry(entry, conversationContext = []) {
         try {
-            console.log('[analyzeEntry] Starting entry analysis');
-            console.log('[analyzeEntry] Entry content:', entry);
-            console.log('[analyzeEntry] Conversation context length:', conversationContext.length);
-
-            if (conversationContext.length > 0) {
-                console.log('[analyzeEntry] Conversation context:', JSON.stringify(conversationContext, null, 2));
-            }
 
             // Create context from conversation history
             const contextText = conversationContext
                 .map(msg => `${msg.role}: ${msg.content}`)
                 .join('\n');
 
-            console.log('[analyzeEntry] Formatted context text:', contextText);
 
             const analysisPrompt = `
     Analyze this journal entry and conversation context for emotional content, mood, and patterns.
@@ -305,10 +297,8 @@ Tone based on recent absence:`;
     Focus on being empathetic and constructive in your analysis.
   `;
 
-            console.log('[analyzeEntry] Generated analysis prompt');
-            console.log('[analyzeEntry] Analysis prompt length:', analysisPrompt.length);
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
             const chat = model.startChat({
                 generationConfig: {
                     temperature: 0.3,
@@ -320,25 +310,18 @@ Tone based on recent absence:`;
                 }
             });
 
-            console.log('[analyzeEntry] Initialized Gemini model and chat');
-            console.log('[analyzeEntry] Sending message to AI...');
 
             const result = await chat.sendMessage(analysisPrompt);
             const response = await result.response;
             const responseText = response.text();
 
-            console.log('[analyzeEntry] Received AI response');
-            console.log('[analyzeEntry] Raw AI response:', responseText);
-            console.log('[analyzeEntry] AI response length:', responseText.length);
 
             // Clean the response to extract JSON
             const jsonMatch = responseText.match(/\{[\s\S]*\}/);
             const jsonString = jsonMatch ? jsonMatch[0] : responseText;
 
-            console.log('[analyzeEntry] Extracted JSON string:', jsonString);
 
             const analysis = JSON.parse(jsonString);
-            console.log('[analyzeEntry] Parsed analysis object:', JSON.stringify(analysis, null, 2));
 
             const finalAnalysis = {
                 mood: analysis.mood || 'neutral',
@@ -350,18 +333,10 @@ Tone based on recent absence:`;
                 keyWords: analysis.keyWords || []
             };
 
-            console.log('[analyzeEntry] Final processed analysis:', JSON.stringify(finalAnalysis, null, 2));
-            console.log('[analyzeEntry] Analysis completed successfully');
 
             return finalAnalysis;
         } catch (error) {
-            console.error('[analyzeEntry] Error analyzing entry:', error);
-            console.log('[analyzeEntry] Error details:', {
-                message: error.message,
-                stack: error.stack,
-                entryContent: entry,
-                contextLength: conversationContext.length
-            });
+            console.error('[analyzeEntry] Error analyzing entry:', error.message);
 
             // Return default analysis if AI analysis fails
             const defaultAnalysis = {
@@ -374,7 +349,6 @@ Tone based on recent absence:`;
                 keyWords: []
             };
 
-            console.log('[analyzeEntry] Returning default analysis due to error:', JSON.stringify(defaultAnalysis, null, 2));
             return defaultAnalysis;
         }
     }
@@ -397,7 +371,7 @@ Tone based on recent absence:`;
       
       Keep responses conversational, supportive, and around 2-3 sentences.`;
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
 
             // Format conversation history for Gemini
             const formattedHistory = conversationContext.length > 0 ?
@@ -443,7 +417,7 @@ Tone based on recent absence:`;
      */
     static async generateNextPrompt(analysis, conversationContext = []) {
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
 
             // Get the last few messages for context
             const recentContext = conversationContext.slice(-4).map(msg =>
@@ -511,9 +485,10 @@ Return only the question, nothing else.`;
                     prompt_used: '', // Can be populated if you track specific prompts
                     image_url: null,
                     voice_url: null,
-                    tags: analysis.themes, // Using themes as tags
+                    tags: this.normalizeTags(analysis.themes || []), // Using themes as tags
+                    emotions: this.normalizeTags(analysis.emotions || []),
                     ai_insight: analysis.insight,
-                    patterns: analysis.patterns,
+                    patterns: analysis.patterns || [],
                     word_count: content.trim().split(/\s+/).length,
                     session_date: sessionDate || new Date().toISOString().split('T')[0]
                 }])
@@ -533,9 +508,8 @@ Return only the question, nothing else.`;
      */
     static async generateTitle(content) {
         try {
-            console.log('Starting title generation for content:', content.substring(0, 100) + '...');
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
 
             const prompt = `Generate a concise, meaningful title for this journal entry. The title should:
 - Be 3-6 words maximum
@@ -547,37 +521,30 @@ Journal entry: "${content}"
 
 Return only the title, nothing else.`;
 
-            console.log('Sending prompt to Gemini for title generation');
             const result = await model.generateContent(prompt);
             const response = await result.response;
             const aiTitle = response.text().trim();
 
-            console.log('Raw AI title response:', aiTitle);
 
             // Clean up the title (remove quotes, extra whitespace)
             const cleanTitle = aiTitle.replace(/['"]/g, '').trim();
-            console.log('Cleaned title:', cleanTitle);
 
             // Fallback to ensure reasonable length
             const finalTitle = cleanTitle.length > 50 ? cleanTitle.substring(0, 47) + '...' : cleanTitle;
-            console.log('Final title:', finalTitle);
 
             return finalTitle;
 
         } catch (error) {
             console.error('Error generating AI title:', error);
-            console.log('Falling back to original title generation logic');
 
             // Fallback to original logic if AI fails
             const words = content.trim().split(/\s+/);
             if (words.length <= 5) {
-                console.log('Content is short, returning as is:', content);
                 return content;
             }
 
             const title = words.slice(0, 5).join(' ');
             const fallbackTitle = title.length > 50 ? title.substring(0, 47) + '...' : title + '...';
-            console.log('Fallback title generated:', fallbackTitle);
 
             return fallbackTitle;
         }
@@ -648,7 +615,7 @@ Return only the title, nothing else.`;
         }
       `;
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
             const chat = model.startChat({
                 generationConfig: {
                     temperature: 0.5,
@@ -681,20 +648,14 @@ Return only the title, nothing else.`;
     /**
      * Get entries for a specific date
      */
-    static async getEntriesForDate(supabaseClient, userId, date) {
+    static async getEntriesForDate(supabaseClient, userId, dateKey) {
         try {
-            const startOfDay = new Date(date);
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date(date);
-            endOfDay.setHours(23, 59, 59, 999);
-
+            // dateKey is YYYY-MM-DD, matched against the day each entry belongs to (session_date)
             const { data, error } = await supabaseClient
                 .from('journal_entries')
                 .select('*')
                 .eq('user_id', userId)
-                .gte('created_at', startOfDay.toISOString())
-                .lte('created_at', endOfDay.toISOString())
+                .eq('session_date', dateKey)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -768,7 +729,7 @@ Return only the title, nothing else.`;
             const mostActiveDay = Object.keys(dayCount).reduce((a, b) => dayCount[a] > dayCount[b] ? a : b);
 
             // Get top emotions from tags
-            const allTags = entries.flatMap(entry => entry.tags || []);
+            const allTags = entries.flatMap(entry => (entry.emotions && entry.emotions.length ? entry.emotions : entry.tags) || []);
             const tagCount = {};
             allTags.forEach(tag => {
                 tagCount[tag] = (tagCount[tag] || 0) + 1;
@@ -797,26 +758,483 @@ Return only the title, nothing else.`;
     static calculateStreak(entries) {
         if (!entries || entries.length === 0) return 0;
 
-        const dates = [...new Set(entries.map(entry =>
-            new Date(entry.created_at).toDateString()
-        ))].sort((a, b) => new Date(b) - new Date(a));
+        const days = new Set(entries.map((entry) => this.entryDay(entry)));
+        const cursor = new Date();
+
+        // Today may not be written yet; the streak is still alive if yesterday was
+        if (!days.has(this.toDateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
 
         let streak = 0;
-        const today = new Date().toDateString();
-        let currentDate = new Date();
-
-        for (let i = 0; i < dates.length; i++) {
-            const entryDate = new Date(dates[i]).toDateString();
-            const expectedDate = currentDate.toDateString();
-
-            if (entryDate === expectedDate) {
-                streak++;
-                currentDate.setDate(currentDate.getDate() - 1);
-            } else {
-                break;
-            }
+        while (days.has(this.toDateKey(cursor))) {
+            streak++;
+            cursor.setDate(cursor.getDate() - 1);
         }
 
         return streak;
+    }
+
+    // ───────────────────────── Dates & shared helpers ─────────────────────────
+
+    static toDateKey(date) {
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    /** The day an entry belongs to: the explicit session_date, else the day it was created. */
+    static entryDay(entry) {
+        return entry.session_date || this.toDateKey(entry.created_at);
+    }
+
+    static countBy(values, limit = 5) {
+        const counts = {};
+        values.filter(Boolean).forEach((v) => { counts[v] = (counts[v] || 0) + 1; });
+        return Object.entries(counts)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, limit)
+            .map(([name, count]) => ({ name, count }));
+    }
+
+    static async fetchEntriesBetween(supabaseClient, userId, startDate, endDate, columns = '*') {
+        const { data, error } = await supabaseClient
+            .from('journal_entries')
+            .select(columns)
+            .eq('user_id', userId)
+            .gte('created_at', startDate.toISOString())
+            .lte('created_at', endDate.toISOString())
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    }
+
+    // ───────────────────────── Calendar ─────────────────────────
+
+    /**
+     * Days with entries in a month (YYYY-MM), for the calendar view.
+     */
+    static async getCalendar(supabaseClient, userId, month) {
+        const [year, monthIndex] = month.split('-').map(Number);
+        const first = `${month}-01`;
+        const last = this.toDateKey(new Date(year, monthIndex, 0));
+
+        const { data, error } = await supabaseClient
+            .from('journal_entries')
+            .select('id, session_date, created_at, mood, mood_score')
+            .eq('user_id', userId)
+            .gte('session_date', first)
+            .lte('session_date', last)
+            .order('created_at', { ascending: true });
+
+        if (error) throw new Error('Failed to get calendar');
+
+        const days = {};
+        (data || []).forEach((entry) => {
+            const day = this.entryDay(entry);
+            days[day] = days[day] || { date: day, count: 0, scoreTotal: 0 };
+            days[day].count += 1;
+            days[day].scoreTotal += entry.mood_score || 0;
+        });
+
+        return Object.values(days).map(({ date, count, scoreTotal }) => ({
+            date,
+            count,
+            averageMoodScore: Math.round((scoreTotal / count) * 10) / 10
+        }));
+    }
+
+    // ───────────────────────── Search & tags ─────────────────────────
+
+    static async searchEntries(supabaseClient, userId, query, startDate = null, endDate = null) {
+        try {
+            // Characters that have meaning inside a PostgREST filter expression
+            const term = query.replace(/[%,()*\\]/g, ' ').trim();
+
+            let request = supabaseClient
+                .from('journal_entries')
+                .select('*')
+                .eq('user_id', userId)
+                .or(`content.ilike.%${term}%,title.ilike.%${term}%`)
+                .order('created_at', { ascending: false })
+                .limit(100);
+
+            if (startDate) request = request.gte('created_at', startDate.toISOString());
+            if (endDate) request = request.lte('created_at', endDate.toISOString());
+
+            const { data, error } = await request;
+            if (error) throw error;
+
+            return { entries: data || [], totalResults: (data || []).length };
+        } catch (error) {
+            console.error('Error searching entries:', error.message);
+            throw new Error('Failed to search entries');
+        }
+    }
+
+    static normalizeTags(tags) {
+        const seen = new Set();
+        return tags
+            .filter((t) => typeof t === 'string')
+            .map((t) => t.trim().toLowerCase().slice(0, 30))
+            .filter((t) => t && !seen.has(t) && seen.add(t))
+            .slice(0, 20);
+    }
+
+    static async tagEntry(supabaseClient, userId, entryId, tags) {
+        try {
+            const cleaned = this.normalizeTags(tags);
+            const { data, error } = await supabaseClient
+                .from('journal_entries')
+                .update({ tags: cleaned })
+                .eq('id', entryId)
+                .eq('user_id', userId)
+                .select('tags');
+
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error('Entry not found');
+
+            return { tags: data[0].tags };
+        } catch (error) {
+            console.error('Error tagging entry:', error.message);
+            throw new Error('Failed to tag entry');
+        }
+    }
+
+    static async getAllTags(supabaseClient, userId) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('journal_entries')
+                .select('tags')
+                .eq('user_id', userId);
+
+            if (error) throw error;
+
+            return this.countBy((data || []).flatMap((e) => e.tags || []), 200)
+                .map(({ name, count }) => ({ tag: name, count }));
+        } catch (error) {
+            console.error('Error getting tags:', error.message);
+            throw new Error('Failed to get tags');
+        }
+    }
+
+    static async getEntriesByTag(supabaseClient, userId, tag, startDate = null, endDate = null) {
+        try {
+            const normalized = tag.trim().toLowerCase();
+
+            let request = supabaseClient
+                .from('journal_entries')
+                .select('*')
+                .eq('user_id', userId)
+                .contains('tags', [normalized])
+                .order('created_at', { ascending: false });
+
+            if (startDate) request = request.gte('created_at', startDate.toISOString());
+            if (endDate) request = request.lte('created_at', endDate.toISOString());
+
+            const { data, error } = await request;
+            if (error) throw error;
+
+            return { entries: data || [], tag: normalized, totalResults: (data || []).length };
+        } catch (error) {
+            console.error('Error getting entries by tag:', error.message);
+            throw new Error('Failed to get entries by tag');
+        }
+    }
+
+    // ───────────────────────── Mood, streaks, insights ─────────────────────────
+
+    static async getMoodAnalysis(supabaseClient, userId, startDate, endDate) {
+        try {
+            const entries = await this.fetchEntriesBetween(supabaseClient, userId, startDate, endDate);
+
+            if (entries.length === 0) {
+                return {
+                    overallMood: 'neutral',
+                    moodTrend: 'stable',
+                    dominantEmotions: [],
+                    moodScore: 0,
+                    insights: ['No entries in this period yet.'],
+                    series: []
+                };
+            }
+
+            const scores = entries.map((e) => e.mood_score || 0);
+            const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+            // Trend: compare the first half of the period with the second half
+            const mid = Math.floor(scores.length / 2);
+            let moodTrend = 'stable';
+            if (scores.length >= 4) {
+                const avg = (list) => list.reduce((a, b) => a + b, 0) / list.length;
+                const delta = avg(scores.slice(mid)) - avg(scores.slice(0, mid));
+                if (delta > 1) moodTrend = 'improving';
+                else if (delta < -1) moodTrend = 'declining';
+            }
+
+            const overallMood = average > 2 ? 'positive' : average < -2 ? 'negative' : Math.abs(average) <= 0.5 ? 'neutral' : 'mixed';
+
+            const dominantEmotions = this.countBy(
+                entries.flatMap((e) => (e.emotions && e.emotions.length ? e.emotions : e.tags || [])),
+                5
+            );
+
+            const byDay = {};
+            entries.forEach((e) => {
+                const day = this.entryDay(e);
+                byDay[day] = byDay[day] || [];
+                byDay[day].push(e.mood_score || 0);
+            });
+            const series = Object.entries(byDay).map(([date, list]) => ({
+                date,
+                moodScore: Math.round((list.reduce((a, b) => a + b, 0) / list.length) * 10) / 10
+            }));
+
+            const insights = [];
+            if (moodTrend === 'improving') insights.push('Your mood has been trending upward during this period.');
+            if (moodTrend === 'declining') insights.push('Your mood has dipped lately. Be gentle with yourself and consider talking it through.');
+            if (dominantEmotions[0]) insights.push(`"${dominantEmotions[0].name}" came up most often in your entries.`);
+            const best = series.reduce((a, b) => (b.moodScore > a.moodScore ? b : a));
+            insights.push(`Your brightest day was ${best.date}.`);
+
+            return {
+                overallMood,
+                moodTrend,
+                dominantEmotions,
+                moodScore: Math.round(average * 10) / 10,
+                insights,
+                series
+            };
+        } catch (error) {
+            console.error('Error getting mood analysis:', error.message);
+            throw new Error('Failed to get mood analysis');
+        }
+    }
+
+    static async getWritingStreak(supabaseClient, userId) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('journal_entries')
+                .select('session_date, created_at')
+                .eq('user_id', userId);
+
+            if (error) throw error;
+
+            const days = [...new Set((data || []).map((e) => this.entryDay(e)))].sort();
+            const MILESTONES = [3, 7, 14, 30, 60, 100, 200, 365];
+
+            if (days.length === 0) {
+                return { currentStreak: 0, longestStreak: 0, streakStartDate: null, nextMilestone: MILESTONES[0], totalDaysWritten: 0 };
+            }
+
+            const dayMs = 24 * 60 * 60 * 1000;
+            const gap = (a, b) => Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / dayMs);
+
+            let longest = 1;
+            let run = 1;
+            for (let i = 1; i < days.length; i++) {
+                run = gap(days[i - 1], days[i]) === 1 ? run + 1 : 1;
+                longest = Math.max(longest, run);
+            }
+
+            // The current streak is alive if the last entry was today or yesterday
+            const last = days[days.length - 1];
+            const sinceLast = gap(last, this.toDateKey(new Date()));
+            let currentStreak = 0;
+            let streakStartDate = null;
+            if (sinceLast <= 1) {
+                currentStreak = 1;
+                streakStartDate = last;
+                for (let i = days.length - 2; i >= 0 && gap(days[i], days[i + 1]) === 1; i--) {
+                    currentStreak++;
+                    streakStartDate = days[i];
+                }
+            }
+
+            return {
+                currentStreak,
+                longestStreak: longest,
+                streakStartDate,
+                nextMilestone: MILESTONES.find((m) => m > currentStreak) || null,
+                totalDaysWritten: days.length
+            };
+        } catch (error) {
+            console.error('Error getting writing streak:', error.message);
+            throw new Error('Failed to get writing streak');
+        }
+    }
+
+    static async getJournalInsights(supabaseClient, userId, timeframe = 'month') {
+        try {
+            const spanDays = { week: 7, month: 30, year: 365 }[timeframe] || 30;
+            const end = new Date();
+            const start = new Date(end.getTime() - spanDays * 24 * 60 * 60 * 1000);
+            const entries = await this.fetchEntriesBetween(supabaseClient, userId, start, end);
+
+            const totalWords = entries.reduce((sum, e) => sum + (e.word_count || 0), 0);
+            const weekday = (e) => new Date(e.created_at).toLocaleDateString('en-US', { weekday: 'long' });
+            const bucket = (e) => {
+                const hour = new Date(e.created_at).getHours();
+                if (hour < 6) return 'night';
+                if (hour < 12) return 'morning';
+                if (hour < 18) return 'afternoon';
+                return 'evening';
+            };
+
+            const writingTime = this.countBy(entries.map(bucket), 4);
+            const mostActiveDay = this.countBy(entries.map(weekday), 1)[0]?.name || null;
+            const scores = entries.map((e) => e.mood_score || 0);
+            const averageScore = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+
+            const recommendations = [];
+            if (entries.length === 0) {
+                recommendations.push('Write your first entry. Even two sentences count.');
+            } else {
+                const perWeek = entries.length / (spanDays / 7);
+                if (perWeek < 2) recommendations.push('Try journaling a little more often. Short, regular entries build the habit.');
+                if (averageScore < -2) recommendations.push('Your entries have carried a lot of weight lately. Consider sharing this with someone you trust or a professional.');
+                if (writingTime[0]) recommendations.push(`You mostly write in the ${writingTime[0].name}. Keep that slot, it clearly works for you.`);
+                if (totalWords / entries.length < 40) recommendations.push('Your entries are brief. Try letting one run a bit longer than feels comfortable.');
+            }
+
+            return {
+                writingPatterns: {
+                    entries: entries.length,
+                    entriesPerWeek: Math.round((entries.length / (spanDays / 7)) * 10) / 10,
+                    mostActiveDay
+                },
+                topicTrends: this.countBy(entries.flatMap((e) => e.tags || []), 8),
+                emotionalPatterns: {
+                    averageMoodScore: Math.round(averageScore * 10) / 10,
+                    topEmotions: this.countBy(entries.flatMap((e) => e.emotions || []), 5)
+                },
+                wordCount: {
+                    total: totalWords,
+                    average: entries.length ? Math.round(totalWords / entries.length) : 0
+                },
+                writingTime,
+                recommendations
+            };
+        } catch (error) {
+            console.error('Error getting insights:', error.message);
+            throw new Error('Failed to get journal insights');
+        }
+    }
+
+    // ───────────────────────── Prompts ─────────────────────────
+
+    static async getPersonalizedPrompts(supabaseClient, userId, count = 5) {
+        const wanted = Math.max(1, Math.min(count, 10));
+        const fallback = [
+            'What is one thing from today you want to remember?',
+            'What has been taking up the most space in your mind lately?',
+            'Describe a moment this week when you felt like yourself.',
+            'What do you need more of right now, and what do you need less of?',
+            'Write a note to yourself a month from now.',
+            'What are you avoiding, and what would be the first small step toward it?',
+            'Who or what made you feel supported recently?'
+        ];
+
+        try {
+            const { data } = await supabaseClient
+                .from('journal_entries')
+                .select('mood, tags')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(8);
+
+            if (!data || data.length === 0) return fallback.slice(0, wanted);
+
+            const themes = this.countBy(data.flatMap((e) => e.tags || []), 5).map((t) => t.name).join(', ') || 'none yet';
+            const moods = data.map((e) => e.mood).filter(Boolean).join(', ') || 'unknown';
+
+            const model = genAI.getGenerativeModel({ model: config.gemini.model });
+            const result = await model.generateContent(
+                `Write ${wanted} short, warm journaling prompts (one sentence each) for someone whose recent entries touched on: ${themes}. Recent moods: ${moods}. ` +
+                `Do not quote or reveal specifics, keep them open-ended and gentle. Return one prompt per line, no numbering or bullets.`
+            );
+            const prompts = result.response.text().split('\n')
+                .map((l) => l.replace(/^[\s\-*\d.)]+/, '').trim())
+                .filter((l) => l.length > 10 && l.length < 300)
+                .slice(0, wanted);
+
+            return prompts.length ? prompts : fallback.slice(0, wanted);
+        } catch (error) {
+            console.error('Error generating personalized prompts:', error.message);
+            return fallback.slice(0, wanted);
+        }
+    }
+
+    // ───────────────────────── Export ─────────────────────────
+
+    static async exportEntries(supabaseClient, userId, startDate, endDate, format = 'json') {
+        try {
+            const entries = await this.fetchEntriesBetween(supabaseClient, userId, startDate, endDate);
+            const rows = entries.map((e) => ({
+                date: this.entryDay(e),
+                title: e.title,
+                mood: e.mood,
+                moodScore: e.mood_score,
+                tags: e.tags || [],
+                content: e.content,
+                insight: e.ai_insight
+            }));
+
+            if (format === 'csv') {
+                const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                const header = ['date', 'title', 'mood', 'moodScore', 'tags', 'content', 'insight'];
+                return [header.join(','), ...rows.map((r) => [r.date, r.title, r.mood, r.moodScore, r.tags.join('; '), r.content, r.insight].map(cell).join(','))].join('\n');
+            }
+
+            if (format === 'md' || format === 'txt') {
+                return rows.map((r) =>
+                    format === 'md'
+                        ? `## ${r.title} (${r.date})\n\n*Mood: ${r.mood}${r.tags.length ? ` · Tags: ${r.tags.join(', ')}` : ''}*\n\n${r.content}\n`
+                        : `${r.title} (${r.date})\nMood: ${r.mood}\n\n${r.content}\n`
+                ).join('\n---\n\n');
+            }
+
+            return { exportedAt: new Date().toISOString(), entryCount: rows.length, entries: rows };
+        } catch (error) {
+            console.error('Error exporting entries:', error.message);
+            throw new Error('Failed to export entries');
+        }
+    }
+
+    // ───────────────────────── Reminders ─────────────────────────
+
+    static defaultReminders() {
+        return { enabled: false, time: '20:00', days: [0, 1, 2, 3, 4, 5, 6] };
+    }
+
+    static async getReminders(supabaseClient, userId) {
+        const { data, error } = await supabaseClient
+            .from('journal_reminders')
+            .select('enabled, reminder_time, days')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (error) throw new Error('Failed to get reminders');
+        if (!data) return this.defaultReminders();
+        return { enabled: data.enabled, time: data.reminder_time, days: data.days };
+    }
+
+    static async setReminders(supabaseClient, userId, settings = {}) {
+        const defaults = this.defaultReminders();
+        const time = /^([01]\d|2[0-3]):[0-5]\d$/.test(settings.time) ? settings.time : defaults.time;
+        const days = Array.isArray(settings.days)
+            ? [...new Set(settings.days.map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))]
+            : defaults.days;
+
+        const row = {
+            user_id: userId,
+            enabled: Boolean(settings.enabled),
+            reminder_time: time,
+            days,
+            updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from('journal_reminders').upsert(row, { onConflict: 'user_id' });
+        if (error) throw new Error('Failed to save reminders');
+
+        return { settings: { enabled: row.enabled, time, days } };
     }
 }

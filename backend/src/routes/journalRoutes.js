@@ -2,13 +2,19 @@ import express from 'express';
 import { JournalService } from '../services/journalService.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { getSupabaseClient } from '../utils/supabase.js';
+import { journalLimiter } from '../middlewares/rateLimiters.js';
 
 const router = express.Router();
+
+router.use(authenticate, journalLimiter);
+
+const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MONTH_KEY_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 /**
  * Get initial journal prompt to start a journaling session
  */
-router.get('/initial-prompt', authenticate, async (req, res) => {
+router.get('/initial-prompt', async (req, res) => {
   try {
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
@@ -29,15 +35,18 @@ router.get('/initial-prompt', authenticate, async (req, res) => {
  * Process a journal entry and get AI response with next prompt
  * Now handles conversation context from frontend
  */
-router.post('/entry', authenticate, async (req, res) => {
+router.post('/entry', async (req, res) => {
   try {
     const { entry, conversationContext, sessionDate } = req.body;
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
     const supabaseClient = getSupabaseClient(token);
 
-    if (!entry || entry.trim() === '') {
+    if (typeof entry !== 'string' || entry.trim() === '') {
       return res.status(400).json({ error: 'Journal entry content is required' });
+    }
+    if (entry.length > 10000) {
+      return res.status(400).json({ error: 'Journal entry is too long (10,000 characters max)' });
     }
 
     // Validate conversation context format
@@ -73,7 +82,7 @@ router.post('/entry', authenticate, async (req, res) => {
 /**
  * Get journal summary for a date range
  */
-router.get('/summary', authenticate, async (req, res) => {
+router.get('/summary', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const userId = req.user.id;
@@ -106,21 +115,73 @@ router.get('/summary', authenticate, async (req, res) => {
 });
 
 /**
+ * Days with entries in a month (YYYY-MM), for the calendar view
+ */
+router.get('/calendar', async (req, res) => {
+  try {
+    const { month } = req.query;
+    if (!MONTH_KEY_RE.test(month || '')) {
+      return res.status(400).json({ error: 'Month must be formatted as YYYY-MM' });
+    }
+
+    const token = req.headers.authorization?.split(' ')[1];
+    const days = await JournalService.getCalendar(getSupabaseClient(token), req.user.id, month);
+
+    res.status(200).json({ days });
+  } catch (error) {
+    console.error('Calendar error:', error);
+    res.status(500).json({ error: 'Failed to get calendar' });
+  }
+});
+
+/**
+ * Get journal entries by tag
+ */
+router.get('/entries/by-tag', async (req, res) => {
+  try {
+    const { tag, startDate, endDate } = req.query;
+    const userId = req.user.id;
+    const token = req.headers.authorization?.split(' ')[1];
+    const supabaseClient = getSupabaseClient(token);
+
+    if (!tag || tag.trim() === '') {
+      return res.status(400).json({ error: 'Tag is required' });
+    }
+
+    const result = await JournalService.getEntriesByTag(
+      supabaseClient,
+      userId, 
+      tag, 
+      startDate ? new Date(startDate) : null,
+      endDate ? new Date(endDate) : null
+    );
+    
+    res.status(200).json({
+      entries: result.entries,
+      tag: result.tag,
+      totalResults: result.totalResults
+    });
+  } catch (error) {
+    console.error('Get entries by tag error:', error);
+    res.status(500).json({ error: 'Failed to get entries by tag' });
+  }
+});
+
+/**
  * Get all journal entries for a specific date
  */
-router.get('/entries/:date', authenticate, async (req, res) => {
+router.get('/entries/:date', async (req, res) => {
   try {
     const { date } = req.params;
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
     const supabaseClient = getSupabaseClient(token);
 
-    const targetDate = new Date(date);
-    if (isNaN(targetDate.getTime())) {
-      return res.status(400).json({ error: 'Invalid date format' });
+    if (!DATE_KEY_RE.test(date)) {
+      return res.status(400).json({ error: 'Date must be formatted as YYYY-MM-DD' });
     }
 
-    const entries = await JournalService.getEntriesForDate(supabaseClient, userId, targetDate);
+    const entries = await JournalService.getEntriesForDate(supabaseClient, userId, date);
     
     res.status(200).json({
       entries
@@ -134,7 +195,7 @@ router.get('/entries/:date', authenticate, async (req, res) => {
 /**
  * Delete a specific journal entry
  */
-router.delete('/entry/:entryId', authenticate, async (req, res) => {
+router.delete('/entry/:entryId', async (req, res) => {
   try {
     const { entryId } = req.params;
     const userId = req.user.id;
@@ -163,7 +224,7 @@ router.delete('/entry/:entryId', authenticate, async (req, res) => {
 /**
  * Get journal statistics for the user
  */
-router.get('/stats', authenticate, async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
@@ -187,7 +248,7 @@ router.get('/stats', authenticate, async (req, res) => {
 /**
  * Search journal entries by keyword or phrase
  */
-router.get('/search', authenticate, async (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const { query, startDate, endDate } = req.query;
     const userId = req.user.id;
@@ -220,7 +281,7 @@ router.get('/search', authenticate, async (req, res) => {
 /**
  * Get mood analysis for a date range
  */
-router.get('/mood-analysis', authenticate, async (req, res) => {
+router.get('/mood-analysis', async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const userId = req.user.id;
@@ -245,7 +306,8 @@ router.get('/mood-analysis', authenticate, async (req, res) => {
       moodTrend: moodAnalysis.moodTrend,
       dominantEmotions: moodAnalysis.dominantEmotions,
       moodScore: moodAnalysis.moodScore,
-      insights: moodAnalysis.insights
+      insights: moodAnalysis.insights,
+      series: moodAnalysis.series
     });
   } catch (error) {
     console.error('Mood analysis error:', error);
@@ -256,7 +318,7 @@ router.get('/mood-analysis', authenticate, async (req, res) => {
 /**
  * Export journal entries for a date range
  */
-router.get('/export', authenticate, async (req, res) => {
+router.get('/export', async (req, res) => {
   try {
     const { startDate, endDate, format = 'json' } = req.query;
     const userId = req.user.id;
@@ -279,8 +341,11 @@ router.get('/export', authenticate, async (req, res) => {
     if (format === 'json') {
       res.status(200).json(exportData);
     } else {
-      // For other formats, set appropriate headers
-      res.setHeader('Content-Type', 'application/octet-stream');
+      const contentTypes = { csv: 'text/csv', md: 'text/markdown', txt: 'text/plain' };
+      if (!contentTypes[format]) {
+        return res.status(400).json({ error: 'Format must be json, csv, md or txt' });
+      }
+      res.setHeader('Content-Type', `${contentTypes[format]}; charset=utf-8`);
       res.setHeader('Content-Disposition', `attachment; filename="journal_export.${format}"`);
       res.send(exportData);
     }
@@ -293,7 +358,7 @@ router.get('/export', authenticate, async (req, res) => {
 /**
  * Get personalized journal prompts based on user's history
  */
-router.get('/personalized-prompts', authenticate, async (req, res) => {
+router.get('/personalized-prompts', async (req, res) => {
   try {
     const { count = 5 } = req.query;
     const userId = req.user.id;
@@ -314,7 +379,7 @@ router.get('/personalized-prompts', authenticate, async (req, res) => {
 /**
  * Get writing streak information
  */
-router.get('/streak', authenticate, async (req, res) => {
+router.get('/streak', async (req, res) => {
   try {
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
@@ -338,7 +403,7 @@ router.get('/streak', authenticate, async (req, res) => {
 /**
  * Get journal insights and patterns
  */
-router.get('/insights', authenticate, async (req, res) => {
+router.get('/insights', async (req, res) => {
   try {
     const { timeframe = 'month' } = req.query;
     const userId = req.user.id;
@@ -364,7 +429,7 @@ router.get('/insights', authenticate, async (req, res) => {
 /**
  * Tag a journal entry
  */
-router.post('/entry/:entryId/tags', authenticate, async (req, res) => {
+router.post('/entry/:entryId/tags', async (req, res) => {
   try {
     const { entryId } = req.params;
     const { tags } = req.body;
@@ -391,7 +456,7 @@ router.post('/entry/:entryId/tags', authenticate, async (req, res) => {
 /**
  * Get all available tags
  */
-router.get('/tags', authenticate, async (req, res) => {
+router.get('/tags', async (req, res) => {
   try {
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];
@@ -409,42 +474,9 @@ router.get('/tags', authenticate, async (req, res) => {
 });
 
 /**
- * Get journal entries by tag
- */
-router.get('/entries/by-tag', authenticate, async (req, res) => {
-  try {
-    const { tag, startDate, endDate } = req.query;
-    const userId = req.user.id;
-    const token = req.headers.authorization?.split(' ')[1];
-    const supabaseClient = getSupabaseClient(token);
-
-    if (!tag || tag.trim() === '') {
-      return res.status(400).json({ error: 'Tag is required' });
-    }
-
-    const result = await JournalService.getEntriesByTag(
-      supabaseClient,
-      userId, 
-      tag, 
-      startDate ? new Date(startDate) : null,
-      endDate ? new Date(endDate) : null
-    );
-    
-    res.status(200).json({
-      entries: result.entries,
-      tag: result.tag,
-      totalResults: result.totalResults
-    });
-  } catch (error) {
-    console.error('Get entries by tag error:', error);
-    res.status(500).json({ error: 'Failed to get entries by tag' });
-  }
-});
-
-/**
  * Set journal reminder preferences
  */
-router.post('/reminders', authenticate, async (req, res) => {
+router.post('/reminders', async (req, res) => {
   try {
     const userId = req.user.id;
     const reminderSettings = req.body;
@@ -466,7 +498,7 @@ router.post('/reminders', authenticate, async (req, res) => {
 /**
  * Get journal reminder preferences
  */
-router.get('/reminders', authenticate, async (req, res) => {
+router.get('/reminders', async (req, res) => {
   try {
     const userId = req.user.id;
     const token = req.headers.authorization?.split(' ')[1];

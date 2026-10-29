@@ -464,3 +464,40 @@
 .hidden {
   display: none;
 }
+/* Avatar panel: a right-hand column on wide screens, hidden on small ones */
+.avatar-panel {
+  display: none;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 300px;
+  border-left: 1px solid #e5e7eb;
+  background-color: #fff2c5;
+}
+
+.avatar-panel-hidden {
+  width: 52px;
+}
+
+.avatar-toggle {
+  align-self: flex-start;
+  margin: 12px;
+}
+
+.avatar-stage {
+  flex: none;
+  aspect-ratio: 3 / 4;
+  margin: 0 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+@media (min-width: 1024px) {
+  .avatar-panel {
+    display: flex;
+  }
+}
+
+.chat-area {
+  min-width: 0;
+}

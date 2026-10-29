@@ -13,7 +13,7 @@ const genAI = new GoogleGenerativeAI(config.gemini.apiKey);
 
 export const generateChatResponse = async (prompt, context = [], systemPrompt = '') => {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: config.gemini.model });
 
     // Ensure history is initialized and starts with a user message
     const formattedHistory = context.length > 0 ? 
@@ -59,7 +59,7 @@ export const generateTherapyResponse = async (prompt, type) => {
 
 // export const analyzeMood = async (message) => {
 //   try {
-//     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+//     const model = genAI.getGenerativeModel({ model: config.gemini.model });
     
 //     const analyzePrompt = `
 //     Analyze the emotional tone/mood of this message and categorize it as one of:
@@ -86,7 +86,7 @@ export const generateTherapyResponse = async (prompt, type) => {
 
 // export const analyzeTopic = async (message) => {
 //   try {
-//     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+//     const model = genAI.getGenerativeModel({ model: config.gemini.model });
     
 //     const analyzePrompt = `
 //     Analyze this message and categorize the main topic as one of:

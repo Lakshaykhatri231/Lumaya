@@ -1,0 +1,40 @@
+/* react-calendar, themed with the app's color tokens so it follows light/dark mode */
+.journal-calendar.react-calendar {
+  width: 100%;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-primary));
+  border: 1px solid rgb(var(--color-primary) / 0.15);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  font-family: inherit;
+}
+.journal-calendar .react-calendar__navigation button,
+.journal-calendar .react-calendar__tile {
+  color: rgb(var(--color-primary));
+  border-radius: 0.5rem;
+}
+.journal-calendar .react-calendar__navigation button:enabled:hover,
+.journal-calendar .react-calendar__navigation button:enabled:focus,
+.journal-calendar .react-calendar__tile:enabled:hover,
+.journal-calendar .react-calendar__tile:enabled:focus {
+  background: rgb(var(--color-primary) / 0.1);
+}
+.journal-calendar .react-calendar__month-view__weekdays {
+  color: rgb(var(--color-primary) / 0.6);
+  font-size: 0.75rem;
+}
+.journal-calendar .react-calendar__month-view__days__day--neighboringMonth { color: rgb(var(--color-primary) / 0.35); }
+.journal-calendar .react-calendar__tile--now { background: rgb(var(--color-primary) / 0.08); }
+.journal-calendar .react-calendar__tile--active,
+.journal-calendar .react-calendar__tile--active:enabled:hover,
+.journal-calendar .react-calendar__tile--active:enabled:focus {
+  background: rgb(var(--color-primary));
+  color: #fff;
+}
+.journal-calendar .journal-day-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 2px auto 0;
+  border-radius: 9999px;
+}

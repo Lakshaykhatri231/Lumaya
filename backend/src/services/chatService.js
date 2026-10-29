@@ -12,9 +12,9 @@ import {
   
   INTRO_PROMPT,
   WELCOME_BACK_PROMPT,
-  ONBOARDING_PROMPT,
-  PERSONAL_CONVO_PROMPT
+  ONBOARDING_PROMPT
 } from './prompts.js';
+import { detectUserState, selectPersona } from './userStateService.js';
 
 // Import our enhanced detection functions
 import {
@@ -222,13 +222,6 @@ Your safety is the priority right now. Please reach out to professional crisis c
       // Step 4: Continue with normal conversation flow
       console.log(message);
       
-      // Handle debug deletion
-      if(message=='1236') {
-        await MemoryService.deleteUserProfile(userId); 
-        CacheService.invalidateUserProfile(userId); // Invalidate cache
-        console.log('delete session cleared');
-      }
-      
       // Continue with existing logic using sessionMemory and userProfile from cache/fetch
       let currentSessionMemory = sessionMemory;
       let isFirstInteraction = false;
@@ -238,6 +231,7 @@ Your safety is the priority right now. Please reach out to professional crisis c
       let isNameRequest = false;
       let isNameSuggestion = false;
       let customPrompt = getRandomTherapistPrompt();
+      let personaMeta = null; // { state, style } for regular chat turns
       let userName = null;
 
       // Check if this is a brand new user with no history
@@ -307,9 +301,20 @@ Your safety is the priority right now. Please reach out to professional crisis c
       
       if (!isFirstInteraction && !isOnboarding && !isWelcomeBack && !isAutoWelcome && !isNameRequest && !isNameSuggestion) {
         console.log(`Querying Long-Term Memory for User: ${userId}`);
-        relevantMemories = await MemoryService.queryLongTermMemory(userId, message);
+        // Reading the user's state costs a model call, so it runs alongside the memory lookup
+        const [memories, userState] = await Promise.all([
+          MemoryService.queryLongTermMemory(userId, message),
+          detectUserState(genAI, message, currentSessionMemory.chat_context)
+        ]);
+        relevantMemories = memories;
         console.log(`Found ${relevantMemories.length} Relevant Memories`);
         relevantContext = this.formatContextFromMemories(relevantMemories);
+
+        // Match the therapeutic style to how the user is behaving; no clear signal keeps the weighted random style
+        const persona = selectPersona(userState, currentSessionMemory.chat_context);
+        console.log(`User state: ${persona.state} -> style: ${persona.style || 'weighted random'}`);
+        if (persona.prompt) customPrompt = persona.prompt;
+        personaMeta = { state: persona.state, style: persona.style };
       }
 
       // Build context with memories and user profile
@@ -419,7 +424,8 @@ ${userProfile.onboardingSummary}
       // Add AI response to context
       currentSessionMemory.chat_context.push({
         role: 'assistant',
-        content: finalResponse
+        content: finalResponse,
+        ...(personaMeta && { state: personaMeta.state, ...(personaMeta.style && { style: personaMeta.style }) })
       });
       
       // Enhanced name extraction logic
@@ -535,7 +541,9 @@ ${userProfile.onboardingSummary}
 
       return {
         response: finalResponse,
-        context: currentSessionMemory.chat_context
+        context: currentSessionMemory.chat_context,
+        // How the user came across this turn; the avatar uses it to pick an expression
+        emotion: personaMeta?.state ?? null
       };
       
     } catch (error) {
@@ -587,7 +595,7 @@ ${userProfile.onboardingSummary}
       AI response: "${aiResponse}"
       `;
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: config.gemini.model });
       const result = await model.generateContent(extractPrompt);
       const extractedText = result.response.text().trim();
 
@@ -618,7 +626,7 @@ ${userProfile.onboardingSummary}
       If they don't address the name topic, return confirmed: false.
       `;
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: config.gemini.model });
       const result = await model.generateContent(confirmationPrompt);
       const responseText = result.response.text().trim();
       
@@ -639,7 +647,7 @@ ${userProfile.onboardingSummary}
   }
   
   static async generateOnboardingSummary(chatContext, userName) {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: config.gemini.model });
     
     const summaryPrompt = `
     Based on this conversation, create a concise summary (150-200 words) of key information learned during their initial therapy sessions. 

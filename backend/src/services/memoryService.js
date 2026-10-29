@@ -342,7 +342,7 @@ static async deleteSessionMemory(sessionId, userId = null) {
     try {
       // Only summarize if there are enough messages
       
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: config.gemini.model });
       
       // Extract the conversation as a string
       const conversationText = context.map(msg => 
@@ -432,7 +432,7 @@ ${conversationText}
   // Helper method to generate embeddings using Gemini AI
   static async generateEmbedding(text) {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-embedding-exp-03-07" });
+      const model = genAI.getGenerativeModel({ model: config.gemini.embeddingModel });
       const result = await model.embedContent(text);
       
       // Truncate embedding to match index dimensions

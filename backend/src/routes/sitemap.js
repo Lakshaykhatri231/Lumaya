@@ -9,27 +9,15 @@ router.get('/sitemap.xml', async (req, res) => {
         res.header('Content-Type', 'application/xml');
         res.header('Content-Encoding', 'gzip');
 
-        const smStream = new SitemapStream({ hostname: 'https://www.xryptt.com' });
+        const smStream = new SitemapStream({ hostname: process.env.FRONTEND_URL || 'https://thelumaya.com' });
         const pipeline = smStream.pipe(createGzip());
 
-        // Public pages - highest priority
+        // Public pages
         smStream.write({ url: '/', changefreq: 'daily', priority: 1.0 });
         smStream.write({ url: '/auth', changefreq: 'monthly', priority: 0.5 });
-        smStream.write({ url: '/pricing', changefreq: 'weekly', priority: 0.8 });
         smStream.write({ url: '/about', changefreq: 'monthly', priority: 0.6 });
-        
-        // Legal pages - should be indexed but lower priority
-        smStream.write({ url: '/refund-policy', changefreq: 'monthly', priority: 0.4 });
-        smStream.write({ url: '/privacy-policy', changefreq: 'monthly', priority: 0.4 });
-        smStream.write({ url: '/terms-of-service', changefreq: 'monthly', priority: 0.4 });
-        
-        // Protected routes - lower priority as they require login
-        // Note: Including these helps with SEO even though they redirect to login
-        smStream.write({ url: '/register', changefreq: 'weekly', priority: 0.7 });
-        smStream.write({ url: '/analyzer', changefreq: 'weekly', priority: 0.7 });
-        smStream.write({ url: '/stealth', changefreq: 'weekly', priority: 0.7 });
-        smStream.write({ url: '/dashboard', changefreq: 'weekly', priority: 0.7 });
-        smStream.write({ url: '/portfolio', changefreq: 'weekly', priority: 0.7 });
+        smStream.write({ url: '/chat-guide', changefreq: 'monthly', priority: 0.5 });
+        smStream.write({ url: '/privacy', changefreq: 'monthly', priority: 0.4 });
 
         smStream.end();
 

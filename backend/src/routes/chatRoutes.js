@@ -1,13 +1,14 @@
 import express from 'express';
 import { ChatService } from '../services/chatService.js';
 import { NudgeService } from '../services/NudgeService.js';
-import { authenticate } from '../middlewares/authMiddleware.js';
+import { authenticate, enforceNotBlocked } from '../middlewares/authMiddleware.js';
+import { chatLimiter, nudgeLimiter } from '../middlewares/rateLimiters.js';
 import { MemoryService } from '../services/memoryService.js';
 import { CacheService } from '../services/cacheService.js';
 
 const router = express.Router();
 
-router.post('/chat', authenticate, async (req, res) => {
+router.post('/chat', authenticate, chatLimiter, async (req, res) => {
   try {
     const { sessionId, message } = req.body;
     const userId = req.user.id;
@@ -94,8 +95,7 @@ router.post('/refresh-session', authenticate, async (req, res) => {
     });
   }
 });
-router.post('/nudge', authenticate, async (req, res) => {
-  console.log('Nudge endpoint hit'); // Debug log
+router.post('/nudge', authenticate, nudgeLimiter, enforceNotBlocked, async (req, res) => {
   try {
     const { sessionId } = req.body;
     const userId = req.user.id;

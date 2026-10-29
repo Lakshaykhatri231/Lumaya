@@ -43,6 +43,23 @@ const Navbar = ({ user, onLogout }) => {
             Chat
           </button>
         )}
+        {user && (
+          <button
+            style={{
+              backgroundColor: "#f8b404",
+              color: "#fff",
+              padding: "8px 16px",
+              border: "none",
+              borderRadius: "100px",
+              fontWeight: "bold",
+              marginRight: "10px",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/journal")}
+          >
+            Journal
+          </button>
+        )}
         
         {/* Conditional rendering based on user authentication */}
         {user ? (
@@ -96,6 +113,16 @@ const Navbar = ({ user, onLogout }) => {
             }}
           >
             Chat
+          </button>
+        )}
+        {user && (
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              navigate("/journal");
+            }}
+          >
+            Journal
           </button>
         )}
         

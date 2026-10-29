@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 import logo from "../assets/LumayaLogo.png";
 
@@ -15,7 +16,8 @@ const Footer = () => {
         </div>
         <div className="footer-contact">
           <h4>Stay Connected</h4>
-          <p>Email: support@lumaya.com</p>
+          <p>Email: support@thelumaya.com</p>
+          <p><Link to="/privacy">Privacy Policy</Link> · <Link to="/chat-guide">Chat Guide</Link> · <Link to="/about">About</Link></p>
           <div className="social-icons">
             <a href="#"><i className="fab fa-facebook-f"></i></a>
             <a href="#"><i className="fab fa-twitter"></i></a>

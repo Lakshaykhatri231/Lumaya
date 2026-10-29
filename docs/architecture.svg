@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1660 1000" width="1660" height="1000" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+<rect width="1660" height="1000" fill="#ffffff"/>
+<rect x="210" y="40" width="290" height="800" rx="8" fill="#fff" stroke="#6c8ebf" stroke-width="1.5"/>
+<path d="M210,70 V48 a8,8 0 0 1 8,-8 H492 a8,8 0 0 1 8,8 V70 z" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Frontend  ·  React + Vite</text>
+<rect x="590" y="40" width="560" height="560" rx="8" fill="#fff" stroke="#82b366" stroke-width="1.5"/>
+<path d="M590,70 V48 a8,8 0 0 1 8,-8 H1142 a8,8 0 0 1 8,8 V70 z" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="870.0" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Backend API  ·  Express (Render web service)</text>
+<rect x="1230" y="40" width="380" height="410" rx="8" fill="#fff" stroke="#d79b00" stroke-width="1.5"/>
+<path d="M1230,70 V48 a8,8 0 0 1 8,-8 H1602 a8,8 0 0 1 8,8 V70 z" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
+<text x="1420.0" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Tiered memory  (per user)</text>
+<rect x="1230" y="480" width="380" height="440" rx="8" fill="#fff" stroke="#9673a6" stroke-width="1.5"/>
+<path d="M1230,510 V488 a8,8 0 0 1 8,-8 H1602 a8,8 0 0 1 8,8 V510 z" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="500" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">External services</text>
+<rect x="20" y="360" width="130" height="70" rx="12" fill="#fff2cc" stroke="#d6b656" stroke-width="2"/>
+<text x="85.0" y="392.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">User</text>
+<text x="85.0" y="406.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">browser or phone</text>
+<rect x="235" y="90" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="122.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Chat</text>
+<text x="355.0" y="136.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">typing animation, idle nudge,</text>
+<text x="355.0" y="150.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">crisis-lock banner</text>
+<rect x="235" y="205" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="237.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">3D avatar</text>
+<text x="355.0" y="251.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">VRM via Three.js; expression</text>
+<text x="355.0" y="265.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">follows the user's state</text>
+<rect x="235" y="320" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="352.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Journal</text>
+<text x="355.0" y="366.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">write, calendar, insights,</text>
+<text x="355.0" y="380.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">tags, export, reminders</text>
+<rect x="235" y="435" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="467.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Guided tools</text>
+<text x="355.0" y="481.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">dream, mental health,</text>
+<text x="355.0" y="495.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">relationships, life path</text>
+<rect x="235" y="550" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="589.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Sign in + pricing</text>
+<text x="355.0" y="603.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">Supabase JS, Paddle.js</text>
+<rect x="235" y="665" width="240" height="85" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="355.0" y="704.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Browser storage</text>
+<text x="355.0" y="718.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">JWT, session id, chat copy</text>
+<rect x="620" y="90" width="500" height="80" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="870.0" y="120.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Middleware</text>
+<text x="870.0" y="134.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">CORS allow-list → rate limit → JWT check (Supabase)</text>
+<text x="870.0" y="148.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">→ SOS lockout check</text>
+<rect x="620" y="200" width="500" height="80" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="870.0" y="237.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Routes</text>
+<text x="870.0" y="251.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">/chatbot  /journal  /tools  /auth  /webhooks  /admin</text>
+<rect x="620" y="330" width="116" height="120" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="678.0" y="373.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Subscription</text>
+<text x="678.0" y="387.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">sync</text>
+<text x="678.0" y="401.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">Paddle event</text>
+<text x="678.0" y="415.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">→ subscriptions</text>
+<rect x="748" y="330" width="116" height="120" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="806.0" y="373.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Guided</text>
+<text x="806.0" y="387.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">tools</text>
+<text x="806.0" y="401.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">prompt →</text>
+<text x="806.0" y="415.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">Gemini</text>
+<rect x="876" y="330" width="116" height="120" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="934.0" y="373.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Journal</text>
+<text x="934.0" y="387.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">service</text>
+<text x="934.0" y="401.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">mood, themes,</text>
+<text x="934.0" y="415.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">streaks, export</text>
+<rect x="1004" y="330" width="116" height="120" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="1062.0" y="373.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Chat</text>
+<text x="1062.0" y="387.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">service</text>
+<text x="1062.0" y="401.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">guardrails,</text>
+<text x="1062.0" y="415.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">persona, memory</text>
+<rect x="1260" y="95" width="320" height="75" rx="6" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
+<text x="1420.0" y="129.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">1 · In-process cache</text>
+<text x="1420.0" y="143.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">hot reads, 2 h TTL</text>
+<rect x="1260" y="215" width="320" height="85" rx="6" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
+<text x="1420.0" y="247.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">2 · Redis</text>
+<text x="1420.0" y="261.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">live session, profile, SOS lock,</text>
+<text x="1420.0" y="275.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">OTP codes, web sessions</text>
+<rect x="1260" y="345" width="320" height="75" rx="6" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
+<text x="1420.0" y="379.5" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">3 · Pinecone</text>
+<text x="1420.0" y="393.5" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">long-term summaries as vectors</text>
+<rect x="1260" y="535" width="320" height="62" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="556.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Supabase</text>
+<text x="1420.0" y="570.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">auth + Postgres: journal_entries,</text>
+<text x="1420.0" y="584.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">journal_reminders, subscriptions</text>
+<rect x="1260" y="611" width="320" height="62" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="639.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Google Gemini</text>
+<text x="1420.0" y="653.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">replies, analysis, embeddings</text>
+<rect x="1260" y="687" width="320" height="62" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="715.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Hugging Face</text>
+<text x="1420.0" y="729.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">mood + topic labels</text>
+<rect x="1260" y="763" width="320" height="62" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="791.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Resend</text>
+<text x="1420.0" y="805.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">verification + welcome email</text>
+<rect x="1260" y="839" width="320" height="62" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="1420.0" y="867.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Paddle</text>
+<text x="1420.0" y="881.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">checkout + signed webhooks</text>
+<rect x="20" y="60" width="130" height="28" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+<text x="85.0" y="78.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Client</text>
+<rect x="20" y="98" width="130" height="28" rx="6" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+<text x="85.0" y="116.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Server</text>
+<rect x="20" y="136" width="130" height="28" rx="6" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
+<text x="85.0" y="154.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Memory / data</text>
+<rect x="20" y="174" width="130" height="28" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+<text x="85.0" y="192.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">External service</text>
+<rect x="20" y="212" width="130" height="28" rx="6" fill="#fff2cc" stroke="#d6b656" stroke-width="1.5"/>
+<text x="85.0" y="230.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Person</text>
+<path d="M150.0,395.0 L210.0,394.96" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M500.0,300.0 L590.0,300.008" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M355.0,840.0 L355,960 L1420,960 L1420.0,920.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M870.0,170.0 L870.0,200.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M678.0,280.0 L678.0,330.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M806.0,280.0 L806.0,330.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M934.0,280.0 L934.0,330.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M1062.0,280.0 L1062.0,330.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M1120.0,380.004 L1230.0,380.01300000000003" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M678.0,450.0 L678,540 L1190,540 L1230.0,540.016" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M806.0,450.0 L806,540 L1190,540 L1230.0,540.016" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M934.0,450.0 L934,540 L1190,540 L1230.0,540.016" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M1062.0,450.0 L1062,540 L1190,540 L1230.0,540.016" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M1309.984,164.9975 L1309.984,215.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M1309.984,300.0 L1309.984,345.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M1509.984,345.0 L1509.984,300.0" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<rect x="510.2" y="291.004" width="69.6" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="545.0" y="303.004" text-anchor="middle" font-size="10.5" fill="#111827">HTTPS + JWT</text>
+<rect x="742.7" y="951.0" width="209.6" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="847.5" y="963.0" text-anchor="middle" font-size="10.5" fill="#111827">Supabase sign-in  ·  Paddle checkout</text>
+<rect x="1137.4" y="371.0085" width="75.19999999999999" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="1175.0" y="383.0085" text-anchor="middle" font-size="10.5" fill="#111827">read / write</text>
+<rect x="739.808" y="531.0" width="338.4" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="909.008" y="543.0" text-anchor="middle" font-size="10.5" fill="#111827">Gemini · Supabase · Hugging Face · Resend · Paddle webhooks</text>
+<rect x="1247.184" y="180.99875" width="125.6" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="1309.984" y="192.99875" text-anchor="middle" font-size="10.5" fill="#111827">miss → pipelined read</text>
+<rect x="1252.7839999999999" y="313.5" width="114.39999999999999" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="1309.984" y="325.5" text-anchor="middle" font-size="10.5" fill="#111827">summary + embedding</text>
+<rect x="1472.384" y="313.5" width="75.19999999999999" height="16" rx="3" fill="#fff" fill-opacity="0.95"/>
+<text x="1509.984" y="325.5" text-anchor="middle" font-size="10.5" fill="#111827">recall top 5</text>
+</svg>

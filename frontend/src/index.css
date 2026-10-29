@@ -1,4 +1,8 @@
 /*
+  Tailwind is scoped to a `.tw` wrapper (see tailwind.config.js `important` and <Tw> in App.jsx).
+  Pages styled with their own CSS (Home, Chat, Auth, Navbar, Footer) sit outside it and are untouched.
+  Tailwind's global reset is disabled; the small reset further down applies it inside `.tw` only.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,55 +23,81 @@
   }
 }
 
-body {
-  @apply bg-background text-primary transition-colors duration-200;
+/* Scoped equivalent of Tailwind's preflight */
+:where(.tw) {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
 }
-
-/* Glass Morphism */
-/*
-.glass {
-  @apply backdrop-blur-md bg-white/30 border border-white/20;
+/* zero-specificity so Tailwind utilities and component CSS always win */
+:where(.tw) *,
+:where(.tw) ::before,
+:where(.tw) ::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
 }
-
-.glass-hover {
-  @apply hover:bg-white/40 transition-all duration-200;
+:where(.tw) h1, :where(.tw) h2, :where(.tw) h3, :where(.tw) h4, :where(.tw) h5, :where(.tw) h6 {
+  font-size: inherit;
+  font-weight: inherit;
 }
-
-/* Chat Bubbles */
-/*
-.chat-bubble {
-  @apply relative p-4 rounded-[20px] backdrop-blur-sm transition-all duration-200;
+:where(.tw) h1, :where(.tw) h2, :where(.tw) h3, :where(.tw) h4, :where(.tw) h5, :where(.tw) h6,
+:where(.tw) p, :where(.tw) blockquote, :where(.tw) figure, :where(.tw) dl, :where(.tw) dd, :where(.tw) pre, :where(.tw) hr {
+  margin: 0;
 }
-
-.chat-bubble-user {
-  @apply bg-white/40 text-gray-700;
+:where(.tw) ol, :where(.tw) ul, :where(.tw) menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-
-.chat-bubble-ai {
-  @apply bg-white/20 text-gray-700;
+:where(.tw) a {
+  color: inherit;
+  text-decoration: inherit;
 }
-
-/* Animations */
-/*
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+:where(.tw) img, :where(.tw) svg, :where(.tw) video, :where(.tw) canvas {
+  display: block;
+  vertical-align: middle;
 }
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+:where(.tw) img, :where(.tw) video {
+  max-width: 100%;
+  height: auto;
 }
-
-/* Responsive Design */
-/*
-@media (max-width: 768px) {
-  .glass-container {
-    @apply px-4;
-  }
-  
-  .chat-bubble {
-    @apply max-w-[90%];
-  }
+:where(.tw) table {
+  border-collapse: collapse;
+  text-indent: 0;
+  border-color: inherit;
 }
-
-*/
+:where(.tw) button, :where(.tw) input, :where(.tw) select, :where(.tw) textarea {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+:where(.tw) button, :where(.tw) [type='button'], :where(.tw) [type='submit'] {
+  background-color: transparent;
+  background-image: none;
+  cursor: pointer;
+}
+:where(.tw) button:disabled {
+  cursor: default;
+}
+:where(.tw) textarea {
+  resize: vertical;
+}
+:where(.tw) input::placeholder, :where(.tw) textarea::placeholder {
+  opacity: 1;
+  color: #9ca3af;
+}
+:where(.tw) fieldset {
+  margin: 0;
+  padding: 0;
+}
+:where(.tw) legend {
+  padding: 0;
+}
+:where(.tw) [hidden] {
+  display: none;
+}

@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import HomePage from './HomePage.jsx';
 import "./App.css";
-import ChatInterface from './components/new.jsx';
+import ChatInterface from './components/ChatInterface.jsx';
 import DreamInterpreter from './components/DreamInterpreter';
 import MentalHealthPlan from './components/MentalHealthPlan';
 import RelationshipCoaching from './components/RelationshipCoaching';
@@ -15,7 +15,12 @@ import Footer from './components/Footer';
 import AboutUsPage from './components/AboutUsPage';
 import ChatGuide from './components/ChatGuide';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import ProtectedRoute from './components/ProtectedRoute';
+import JournalPage from './components/journal/JournalPage';
 import { checkAuthStatus, signOut } from './services/authService.js';
+
+// Pages styled with Tailwind classes render inside this wrapper (see index.css)
+const Tw = ({ children }) => <div className="tw">{children}</div>;
 
 function App() {
   const [user, setUser] = useState(null);
@@ -100,6 +105,7 @@ function App() {
   // Define navLinks array to pass to the Navbar component
   const navLinks = [
     { path: '/chat', label: 'Chat' },
+    { path: '/journal', label: 'Journal' },
     { path: '/mental-health', label: 'Mental Health' },
     { path: '/relationship', label: 'Relationship' },
     { path: '/life-prediction', label: 'Life Prediction' },
@@ -130,13 +136,14 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatInterface user={user} />} />
-          <Route path="/dream-interpreter" element={<DreamInterpreter user={user} />} />
-          <Route path="/mental-health" element={<MentalHealthPlan user={user} />} />
-          <Route path="/relationship" element={<RelationshipCoaching user={user} />} />
-          <Route path="/life-prediction" element={<LifePrediction user={user} />} />
-          <Route path="/about" element={<AboutUsPage />} />
-          <Route path="/chat-guide" element={<ChatGuide />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/journal" element={<ProtectedRoute user={user}><Tw><JournalPage /></Tw></ProtectedRoute>} />
+          <Route path="/dream-interpreter" element={<Tw><DreamInterpreter user={user} /></Tw>} />
+          <Route path="/mental-health" element={<Tw><MentalHealthPlan user={user} /></Tw>} />
+          <Route path="/relationship" element={<Tw><RelationshipCoaching user={user} /></Tw>} />
+          <Route path="/life-prediction" element={<Tw><LifePrediction user={user} /></Tw>} />
+          <Route path="/about" element={<Tw><AboutUsPage /></Tw>} />
+          <Route path="/chat-guide" element={<Tw><ChatGuide /></Tw>} />
+          <Route path="/privacy" element={<Tw><PrivacyPolicy /></Tw>} />
           <Route
             path="/auth"
             element={

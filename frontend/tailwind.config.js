@@ -5,6 +5,9 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
+  // Every utility is emitted as `.tw .utility`, so Tailwind only affects pages wrapped in <Tw>
+  important: '.tw',
+  corePlugins: { preflight: false },
   theme: {
     extend: {
       colors: {
