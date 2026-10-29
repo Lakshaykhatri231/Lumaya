@@ -15,7 +15,7 @@ https://github.com/user-attachments/assets/ca1663ec-ca27-4c5b-90e9-d77a68fd5429
 - **3D avatar** — an animated VRM avatar (Three.js + `@pixiv/three-vrm`) beside the chat. It blinks, breathes, moves its mouth while Lumaya's reply types out, and shows an expression that follows your detected state. Shown on screens 1024 px and wider; can be hidden
 - **Journal** — write with an AI-generated prompt and get a reflective reply; browse by calendar, search, tag, and export (Markdown, text, CSV, JSON). Mood trend chart, streaks, insights, and an in-app daily reminder
 - **Guided tools** — Dream Interpreter, Life Prediction, Relationship Coaching, Mental Health Plan generator
-- **Safety guardrails** — self-harm detection that shows crisis resources and pauses the chat for 24 hours; deflection of attempts to probe the underlying model
+- **Safety and scope guardrails** — self-harm detection that shows crisis resources and pauses the chat for 24 hours; playful in-character deflection of maths, code, puzzles, homework, translation, trivia, jailbreaks, and "which model are you?" questions
 - **Idle nudges** — a gentle follow-up question if you pause mid-conversation
 - **Auth & accounts** — email + OTP verification, Supabase auth, protected routes
 - **Payments** — Paddle webhook keeps a `subscriptions` table in sync (see [Known gaps](#known-gaps) for the pricing page)
@@ -63,9 +63,18 @@ The read combines a fast offline heuristic with an LLM check and is smoothed ove
 
 ### Guardrails
 
-Every message passes a keyword screen followed by an LLM intent check. A confirmed self-harm intent shows crisis resources and locks the chat for 24 hours (Redis TTL). The lock is enforced on chat, nudges, and the guided tools. Messages probing for the underlying model or technical details are deflected in character. Replies are also checked so they don't break persona, and lightly humanized (occasional typos, punctuation, filler words).
+**Safety.** Every message passes a keyword screen followed by an LLM intent check. A confirmed self-harm intent shows crisis resources and locks the chat for 24 hours (Redis TTL). The lock is enforced on chat, nudges, and the guided tools. An operator can list and lift locks through `/api/admin/*` (see [Admin](#admin)).
 
-An operator can list and lift locks through `/api/admin/*` (see [Admin](#admin)).
+**Scope.** Lumaya is a companion, not an assistant, so people can't use it as a free general-purpose model. Alongside the safety screen, one LLM call reads the message and labels whether the user is asking for a task rather than talking. The task labels are `math`, `code`, `puzzle`, `homework`, `translation`, `trivia`, `jailbreak` ("ignore your instructions", "pretend you are…") and `model_probe` ("which LLM are you?"). A flagged message gets a short, playful, in-character deflection that never answers the question ("Numbers and I have a complicated relationship…"), and steers back to how the person feels. It's layered, so no single piece has to be perfect:
+
+1. **Offline patterns** ([`taskGuard.js`](./backend/src/services/taskGuard.js)) catch the obvious cases instantly and still work if the model is down. They're tight and directive, so someone saying "I have a maths exam and I'm terrified" or "my job is coding and I'm burnt out" is never deflected.
+2. **The LLM read** catches subtle ones the patterns miss. It can add a task label but can't remove one the patterns are sure about. If it fails or returns junk, the patterns decide alone.
+3. **People who are distressed are never deflected for asking something** (jailbreaks excepted).
+4. **A scope reminder** is appended to every chat prompt, and to the guided-tool prompts, as a second line of defence if something slips through. If the model tries to answer a deflected maths question anyway, the reply is replaced with a safe canned line.
+
+This runs in parallel with the safety screen and the memory lookup, and shares one model call with the persona's state read, so it adds no extra round-trip on the critical path. `PERSONA_STATE_DETECTION=off` turns off the LLM read; the offline patterns keep guarding.
+
+Replies are also checked so they don't break persona, and lightly humanized (occasional typos, punctuation, filler words).
 
 ## Tech stack
 
@@ -190,6 +199,7 @@ The Paddle webhook verifies the raw request body, so it is mounted before the JS
 ## Known gaps
 
 - **Pricing, Terms, and Refund pages** (`PricingPage`, `TermsOfServicePage`, `RefundPolicyPage`, `PaymentSuccessPage`, `PrivacyPolicyPage`) still contain the original crypto product's plans and wording and are **not routed**. Lumaya's plans, price ids, and legal text need to be written before they're wired up. The webhook and `subscriptions` table are ready for them.
+- **The scope guard is a strong filter, not a wall.** A determined user can phrase a task cleverly enough to slip past both the patterns and the model read; the scope reminder in the prompt is the backstop. Real people are favoured over catching every attempt, so it errs toward letting a borderline message through.
 - **Account deletion** is by email request; there is no self-serve delete yet.
 - **Journal reminders** appear in-app when the journal is open; there are no emails or push notifications.
 - The Privacy Policy page describes what the code does today; have it reviewed before relying on it as legal text.

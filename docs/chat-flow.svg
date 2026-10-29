@@ -17,8 +17,8 @@
 <text x="830.0" y="315.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Crisis resources + time remaining</text>
 <text x="830.0" y="329.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">no model call</text>
 <rect x="260" y="396" width="280" height="56" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
-<text x="400.0" y="421.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Screen the message</text>
-<text x="400.0" y="435.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">keyword scan, then LLM intent check</text>
+<text x="400.0" y="421.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Read the message (in parallel)</text>
+<text x="400.0" y="435.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">SOS check  ·  state + task read</text>
 <polygon points="400.0,488 510,530.0 400.0,572 290,530.0" fill="#fff2cc" stroke="#d6b656" stroke-width="1.5"/>
 <text x="400.0" y="527.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Self-harm</text>
 <text x="400.0" y="541.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">intent?</text>
@@ -26,11 +26,11 @@
 <text x="830.0" y="527.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Lock for 24 h (Redis TTL)</text>
 <text x="830.0" y="541.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">send crisis response</text>
 <polygon points="400.0,608 510,650.0 400.0,692 290,650.0" fill="#fff2cc" stroke="#d6b656" stroke-width="1.5"/>
-<text x="400.0" y="647.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Probing the</text>
-<text x="400.0" y="661.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">underlying model?</text>
+<text x="400.0" y="647.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Asking for a task or</text>
+<text x="400.0" y="661.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">probing the model?</text>
 <rect x="700" y="623" width="260" height="54" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
-<text x="830.0" y="647.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Deflect in persona</text>
-<text x="830.0" y="661.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">sarcastic, in character</text>
+<text x="830.0" y="647.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Deflect playfully, in character</text>
+<text x="830.0" y="661.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">maths, code, trivia, homework, jailbreak</text>
 <rect x="250" y="728" width="300" height="56" rx="6" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
 <text x="400.0" y="753.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Choose the conversation mode</text>
 <text x="400.0" y="767.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">intro · name · onboarding · welcome · regular</text>
@@ -38,7 +38,7 @@
 <text x="400.0" y="859.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Regular chat</text>
 <text x="400.0" y="873.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">(after onboarding)?</text>
 <rect x="110" y="940" width="250" height="64" rx="6" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
-<text x="235.0" y="969.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Read how the user is behaving</text>
+<text x="235.0" y="969.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Use the state from that read</text>
 <text x="235.0" y="983.0" text-anchor="middle" font-size="10.5" font-weight="400" fill="#374151">heuristic + LLM, smoothed over turns</text>
 <rect x="470" y="940" width="250" height="64" rx="6" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.5"/>
 <text x="595.0" y="969.0" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Semantic memory lookup</text>

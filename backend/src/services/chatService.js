@@ -12,9 +12,10 @@ import {
   
   INTRO_PROMPT,
   WELCOME_BACK_PROMPT,
-  ONBOARDING_PROMPT
+  ONBOARDING_PROMPT,
+  SCOPE_GUARD_PROMPT
 } from './prompts.js';
-import { detectUserState, selectPersona } from './userStateService.js';
+import { analyzeMessage, selectPersona } from './userStateService.js';
 
 // Import our enhanced detection functions
 import {
@@ -22,7 +23,8 @@ import {
   containsAITerm,
   refineTherapyResponse,
   preprocessUserMessage,
-  humanizeTherapyResponse
+  humanizeTherapyResponse,
+  generateTaskDeflection
 } from './aiDetectionPrevention.js';
 
 // Ensure the configuration is loaded before using it
@@ -129,9 +131,20 @@ Your safety is the priority right now. Please reach out to professional crisis c
         };
       }
 
-      // Step 3: Check for SOS/Technical requests
+      // Step 3: Check for SOS, tasks and probing. The SOS screen and the message read
+      // (how the user is presenting + whether they're asking for a task) run together.
+      let analysis = { state: 'neutral', task: 'none' };
+      // A returning, onboarded user's message goes through the regular chat path, which needs a memory lookup.
+      // Start it now so it overlaps the safety screen and the message read instead of waiting for them.
+      const memoryLookup = (userProfile?.name && userProfile.onboardingComplete && message && message.trim() !== '')
+        ? MemoryService.queryLongTermMemory(userId, message)
+        : null;
       if (message && message.trim() !== '') {
-        const preprocessResult = await preprocessUserMessage(message, genAI);
+        const [preprocessResult, messageAnalysis] = await Promise.all([
+          preprocessUserMessage(message, genAI),
+          analyzeMessage(genAI, message, sessionMemory?.chat_context || [])
+        ]);
+        analysis = messageAnalysis;
         
         // Handle SOS situations
         if (preprocessResult.intent === 'SELF_HARM_INTENT') {
@@ -185,9 +198,11 @@ Your safety is the priority right now. Please reach out to professional crisis c
           };
         }
         
-        // Handle technical requests
-        if (preprocessResult.shouldBlock) {
-          console.log('Technical request blocked - returning therapy deflection');
+        // Maths, code, puzzles, homework, translation, trivia, jailbreaks and model probing:
+        // decline in character and steer back, without answering
+        if (analysis.task !== 'none') {
+          console.log(`Off-topic request (${analysis.task}) - deflecting in character`);
+          const deflection = await generateTaskDeflection(analysis.task, message, genAI);
           
           let currentSessionMemory = sessionMemory;
           if (!currentSessionMemory || !currentSessionMemory.chat_context) {
@@ -205,7 +220,7 @@ Your safety is the priority right now. Please reach out to professional crisis c
           
           currentSessionMemory.chat_context.push({
             role: 'assistant',
-            content: preprocessResult.response
+            content: deflection
           });
           
           // Update both Redis and cache
@@ -213,7 +228,7 @@ Your safety is the priority right now. Please reach out to professional crisis c
           CacheService.updateSessionContext(userId, sessionId, currentSessionMemory.chat_context);
           
           return {
-            response: preprocessResult.response,
+            response: deflection,
             context: currentSessionMemory.chat_context
           };
         }
@@ -301,17 +316,12 @@ Your safety is the priority right now. Please reach out to professional crisis c
       
       if (!isFirstInteraction && !isOnboarding && !isWelcomeBack && !isAutoWelcome && !isNameRequest && !isNameSuggestion) {
         console.log(`Querying Long-Term Memory for User: ${userId}`);
-        // Reading the user's state costs a model call, so it runs alongside the memory lookup
-        const [memories, userState] = await Promise.all([
-          MemoryService.queryLongTermMemory(userId, message),
-          detectUserState(genAI, message, currentSessionMemory.chat_context)
-        ]);
-        relevantMemories = memories;
+        relevantMemories = await (memoryLookup ?? MemoryService.queryLongTermMemory(userId, message));
         console.log(`Found ${relevantMemories.length} Relevant Memories`);
         relevantContext = this.formatContextFromMemories(relevantMemories);
 
         // Match the therapeutic style to how the user is behaving; no clear signal keeps the weighted random style
-        const persona = selectPersona(userState, currentSessionMemory.chat_context);
+        const persona = selectPersona(analysis.state, currentSessionMemory.chat_context);
         console.log(`User state: ${persona.state} -> style: ${persona.style || 'weighted random'}`);
         if (persona.prompt) customPrompt = persona.prompt;
         personaMeta = { state: persona.state, style: persona.style };
@@ -383,10 +393,11 @@ ${userProfile.onboardingSummary}
       console.log(`Generating response...`);
       const userMessage = isAutoWelcome ? '' : message;
       
+      // The scope reminder is a second line of defence in case a task slips past the guard
       const response = await generateChatResponse(
         userMessage,
         contextWithMemories,
-        customPrompt
+        `${customPrompt}\n\n${SCOPE_GUARD_PROMPT}`
       );
       
       // Only add user message to context if it's not an auto welcome
